@@ -68,7 +68,12 @@ def main():
     # 但是若是第一次跑，資料庫裡沒有同名 collection，刪除時就會報錯，所以用 try/except 包起來，若報錯就 pass 掉
     
     
-    collection = client.create_collection(COLLECTION_NAME)
+    collection = client.create_collection(
+        COLLECTION_NAME,
+        metadata={"hnsw:space": "cosine"},
+    )
+    # 告訴Chroma底層的HNSW演算法「請用cosine（餘弦）方式計算距離，不要用預設的L2」。
+    
     collection.add(
         documents=documents,
         embeddings=embeddings,
