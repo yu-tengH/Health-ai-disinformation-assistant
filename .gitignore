@@ -13,3 +13,5 @@ tempCodeRunnerFile.py
 
 # 個人筆記文件（如果不想公開可以留著這行；想公開的話刪掉這行即可）
 *.docx
+
+chromadb/
