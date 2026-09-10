@@ -1,0 +1,15 @@
+# Python 虛擬環境
+venv/
+
+# 模型權重與衍生訓練資料（檔案大，且可用 convert_dataset.py 重新產生）
+adapters/
+adapters_iter20/
+data/
+
+# Mac 系統與編輯器產生的暫存檔
+.DS_Store
+tempCodeRunnerFile.py
+~$*
+
+# 個人筆記文件（如果不想公開可以留著這行；想公開的話刪掉這行即可）
+*.docx
