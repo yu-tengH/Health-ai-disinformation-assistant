@@ -15,3 +15,5 @@ tempCodeRunnerFile.py
 *.docx
 
 chromadb/
+scraped_cases/
+data/
