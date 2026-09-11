@@ -17,3 +17,4 @@ tempCodeRunnerFile.py
 chromadb/
 scraped_cases/
 data/
+__pycache__/

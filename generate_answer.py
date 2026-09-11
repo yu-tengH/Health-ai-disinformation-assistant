@@ -31,7 +31,10 @@ def build_prompt(query, search_results):         # 使用者原始的問題query
     prompt = f"""你是一個健康資訊識讀助理，請根據以下查核案例，分析使用者的問題。
         參考案例：{context}
         使用者問題：{query}
-        請根據上述案例的查核邏輯，分析這個問題，並說明理由："""  # """..."""是提示工程
+        請完成以下分析：
+        1. 這則資訊最可能使用了哪些「營造可信度」的手法（例如：權威頭銜、具體數字、名人代言、誇大的因果連結等）？請具體指出。
+        2. 根據參考案例的查核經驗，這類手法通常存在什麼問題？
+        3. 給使用者一句簡短、可以直接分享給親友的提醒文字。"""  # """..."""是提示工程
     return prompt
 
 
@@ -53,7 +56,10 @@ def main():
         query = input("\n> ")
         if query.strip().lower() == "exit":
             break
-
+        
+        if not query.strip():
+            print("請輸入問題")
+            continue
         search_results = search(query, embed_model, collection)
 
         prompt = build_prompt(query, search_results)
