@@ -2,6 +2,8 @@
 把 RAG 檢索到的案例，跟使用者問題組合成提示詞，
 送進 LoRA 微調過的模型，生成最終回答。
 """
+# streamlit run app.py --server.fileWatcherType none
+
 
 import chromadb
 from sentence_transformers import SentenceTransformer
@@ -24,18 +26,35 @@ ADAPTER_PATH = "adapters_iter20"
 # 有些常數（DB_DIR、COLLECTION_NAME這些）跟retrieve.py裡定義的一模一樣，等於同樣的東西寫了兩次。
 # 這確實不是最理想的做法——比較講究的專案會把這些共用常數抽出來，放進一個獨立的config.py檔案，兩支程式都從那裡匯入，避免重複維護。
 
-def build_prompt(query, search_results):         # 使用者原始的問題query，跟從search()拿到的檢索結果search_results
+
+GENERAL_QUESTION_KEYWORDS = ["理論", "原理", "什麼是", "差別", "區別", "定義", "為什麼", "有沒有幫助", "有沒有用", "有助於", "有效嗎"]
+
+
+def build_prompt(query, search_results):
+    is_general = any(keyword in query for keyword in GENERAL_QUESTION_KEYWORDS)
+
+    if is_general:
+        prompt = f"""你是一個健康資訊識讀助理，具備計畫行為理論與AI生成健康假訊息研究的專業知識。
+
+使用者問題：{query}
+
+請直接根據你所學的知識回答這個問題，用你自己的分析講清楚，不要說「根據XX查證」，因為這是一個概念性問題，不是在分析特定案例："""
+        return prompt
+
     documents = search_results["documents"][0]
-    context = "\n\n".join(documents) #「把清單裡每個元素接起來，中間用\n\n（兩個換行，等於空一行）分隔」
+    context = "\n\n".join(documents)
 
     prompt = f"""你是一個健康資訊識讀助理，請根據以下查核案例，分析使用者的問題。
-        參考案例：{context}
-        使用者問題：{query}
-        請完成以下分析：
-        1. 這則資訊最可能使用了哪些「營造可信度」的手法（例如：權威頭銜、具體數字、名人代言、誇大的因果連結等）？請具體指出。
-        2. 根據參考案例的查核經驗，這類手法通常存在什麼問題？
-        3. 給使用者一句簡短、可以直接分享給親友的提醒文字。"""  # """..."""是提示工程
+
+參考案例：
+{context}
+
+使用者問題：{query}
+
+請根據上述案例的查核邏輯，分析這個問題，並說明理由："""
+
     return prompt
+    
 
 
 # 載入所有工具
